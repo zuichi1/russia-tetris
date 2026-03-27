@@ -213,3 +213,94 @@ body {
 .restart-btn:active {
   transform: translateY(0);
 }
+
+.mobile-controls {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.mobile-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.mobile-btn {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #aa3bff, #8a2be2);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 4px 15px rgba(170, 59, 255, 0.4);
+}
+
+.mobile-btn:active {
+  transform: scale(0.95);
+  background: linear-gradient(145deg, #8a2be2, #6a1bb2);
+}
+
+.rotate-btn {
+  width: 130px;
+}
+
+.drop-btn {
+  width: 130px;
+}
+
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: block;
+  }
+
+  .side-panel {
+    display: none;
+  }
+
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .board-wrapper {
+    margin: 0 auto;
+  }
+
+  .cell {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cell {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobile-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .rotate-btn,
+  .drop-btn {
+    width: 110px;
+  }
+
+  .warning-line {
+    top: 48px !important;
+  }
+}

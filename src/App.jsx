@@ -295,6 +295,31 @@ function App() {
     setGameStarted(true)
   }, [])
 
+  const handleRotateTouch = (e) => {
+    e.preventDefault()
+    rotate()
+  }
+
+  const handleLeftTouch = (e) => {
+    e.preventDefault()
+    moveLeft()
+  }
+
+  const handleRightTouch = (e) => {
+    e.preventDefault()
+    moveRight()
+  }
+
+  const handleDownTouch = (e) => {
+    e.preventDefault()
+    moveDown()
+  }
+
+  const handleHardDropTouch = (e) => {
+    e.preventDefault()
+    hardDrop()
+  }
+
   const startGame = useCallback(() => {
     restartGame()
   }, [restartGame])
@@ -435,6 +460,19 @@ function App() {
               </button>
             </div>
           )}
+          <div className="mobile-controls">
+            <div className="mobile-row">
+              <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch} onClick={handleRotate}>↻</button>
+            </div>
+            <div className="mobile-row">
+              <button className="mobile-btn" onTouchStart={handleLeftTouch} onClick={handleLeft}>←</button>
+              <button className="mobile-btn" onTouchStart={handleDownTouch} onClick={handleDown}>↓</button>
+              <button className="mobile-btn" onTouchStart={handleRightTouch} onClick={handleRight}>→</button>
+            </div>
+            <div className="mobile-row">
+              <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch} onClick={handleHardDrop}>↓↓</button>
+            </div>
+          </div>
         </div>
         <div className="side-panel">
           <div className="score-panel">
