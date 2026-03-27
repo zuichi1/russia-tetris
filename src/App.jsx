@@ -447,15 +447,15 @@ function App() {
           )}
           <div className="mobile-controls">
             <div className="mobile-row">
-              <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch} onClick={handleRotate}>↻</button>
+              <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch} onClick={rotate}>↻</button>
             </div>
             <div className="mobile-row">
-              <button className="mobile-btn" onTouchStart={handleLeftTouch} onClick={handleLeft}>←</button>
-              <button className="mobile-btn" onTouchStart={handleDownTouch} onClick={handleDown}>↓</button>
-              <button className="mobile-btn" onTouchStart={handleRightTouch} onClick={handleRight}>→</button>
+              <button className="mobile-btn" onTouchStart={handleLeftTouch} onClick={moveLeft}>←</button>
+              <button className="mobile-btn" onTouchStart={handleDownTouch} onClick={moveDown}>↓</button>
+              <button className="mobile-btn" onTouchStart={handleRightTouch} onClick={moveRight}>→</button>
             </div>
             <div className="mobile-row">
-              <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch} onClick={handleHardDrop}>↓↓</button>
+              <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch} onClick={hardDrop}>↓↓</button>
             </div>
           </div>
         </div>
