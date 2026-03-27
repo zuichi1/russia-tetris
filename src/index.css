@@ -271,6 +271,15 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 10px;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+  }
+
+  .game-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
   }
 
   .board-wrapper {
@@ -278,15 +287,35 @@ body {
   }
 
   .cell {
-    width: 25px;
-    height: 25px;
+    width: min(5vw, 25px);
+    height: min(5vw, 25px);
+  }
+
+  .game-area {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
+  #root {
+    width: 100%;
+    height: 100vh;
   }
 }
 
 @media (max-width: 480px) {
+  .game-title {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
   .cell {
-    width: 18px;
-    height: 18px;
+    width: min(4.5vw, 18px);
+    height: min(4.5vw, 18px);
   }
 
   .mobile-btn {
@@ -302,5 +331,36 @@ body {
 
   .warning-line {
     top: 48px !important;
+  }
+
+  .mobile-controls {
+    bottom: 10px;
+  }
+
+  .mobile-row {
+    gap: 8px;
+    margin: 3px 0;
+  }
+}
+
+@media (max-height: 700px) and (max-width: 500px) {
+  .game-title {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+
+  .cell {
+    width: min(4vw, 16px);
+    height: min(4vw, 16px);
+  }
+
+  .mobile-btn {
+    width: 45px;
+    height: 45px;
+  }
+
+  .rotate-btn,
+  .drop-btn {
+    width: 100px;
   }
 }
