@@ -88,6 +88,8 @@ function App() {
   const [gameOver, setGameOver] = useState(false)
   const [gameStarted, setGameStarted] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [material, setMaterial] = useState('classic')
+  const [clearingRows, setClearingRows] = useState([])
 
   const boardRef = useRef(board)
   const pieceRef = useRef(piece)
@@ -152,10 +154,14 @@ function App() {
   const clearLines = useCallback((boardState) => {
     const newBoard = boardState.filter(row => row.some(cell => cell === null))
     const clearedCount = BOARD_HEIGHT - newBoard.length
+    const clearedRows = []
+    for (let i = 0; i < clearedCount; i++) {
+      clearedRows.push(clearedCount - 1 + i)
+    }
     while (newBoard.length < BOARD_HEIGHT) {
       newBoard.unshift(Array(BOARD_WIDTH).fill(null))
     }
-    return { board: newBoard, clearedCount }
+    return { board: newBoard, clearedCount, clearedRows }
   }, [])
 
   const spawnNewPiece = useCallback(() => {
@@ -189,9 +195,18 @@ function App() {
         setBoard(boardAfterLock)
         return
       }
-      const { board: clearedBoard, clearedCount } = clearLines(boardAfterLock)
-      setBoard(clearedBoard)
-      boardRef.current = clearedBoard
+      const { board: clearedBoard, clearedCount, clearedRows } = clearLines(boardAfterLock)
+      if (material === 'crystal' && clearedRows.length > 0) {
+        setClearingRows(clearedRows)
+        setTimeout(() => {
+          setBoard(clearedBoard)
+          boardRef.current = clearedBoard
+          setClearingRows([])
+        }, 500)
+      } else {
+        setBoard(clearedBoard)
+        boardRef.current = clearedBoard
+      }
       if (clearedCount > 0) {
         setScore(s => s + clearedCount * 100)
       }
@@ -265,16 +280,25 @@ function App() {
       return
     }
 
-    const { board: clearedBoard, clearedCount } = clearLines(boardAfterLock)
-    setBoard(clearedBoard)
-    boardRef.current = clearedBoard
+    const { board: clearedBoard, clearedCount, clearedRows } = clearLines(boardAfterLock)
+    if (material === 'crystal' && clearedRows.length > 0) {
+      setClearingRows(clearedRows)
+      setTimeout(() => {
+        setBoard(clearedBoard)
+        boardRef.current = clearedBoard
+        setClearingRows([])
+      }, 500)
+    } else {
+      setBoard(clearedBoard)
+      boardRef.current = clearedBoard
+    }
     if (clearedCount > 0) {
       setScore(s => s + clearedCount * 100)
     }
     if (!spawnNewPiece()) {
       setGameOver(true)
     }
-  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece])
+  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece, material])
 
   const restartGame = useCallback(() => {
     const newBoard = createEmptyBoard()
@@ -411,6 +435,7 @@ function App() {
   const renderBoard = () => {
     const displayBoard = board.map(row => [...row])
     const shape = getShape(piece)
+    const fallingCells = new Set()
 
     for (let y = 0; y < shape.length; y++) {
       for (let x = 0; x < shape[y].length; x++) {
@@ -419,15 +444,16 @@ function App() {
           const boardX = pos.x + x
           if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
             displayBoard[boardY][boardX] = piece.color
+            fallingCells.add(`${boardX},${boardY}`)
           }
         }
       }
     }
 
-    return displayBoard
+    return { board: displayBoard, fallingCells }
   }
 
-  const displayBoard = renderBoard()
+  const { board: displayBoard, fallingCells } = renderBoard()
 
   return (
     <div className="game-container">
@@ -436,13 +462,24 @@ function App() {
         <div className="board-wrapper">
           <div className="board">
             {displayBoard.map((row, y) =>
-              row.map((cell, x) => (
-                <div
-                  key={`${x}-${y}`}
-                  className={`cell ${cell ? 'filled' : ''} ${y < WARNING_LINE ? 'warning-zone' : ''}`}
-                  style={cell ? { backgroundColor: cell } : undefined}
-                />
-              ))
+              row.map((cell, x) => {
+                const isFalling = fallingCells.has(`${x},${y}`)
+                const isClearing = clearingRows.includes(y)
+                const cellClass = cell
+                  ? isClearing && material === 'crystal'
+                    ? 'filled crystal crystal-shatter'
+                    : material !== 'classic'
+                      ? `filled ${material}`
+                      : 'filled'
+                  : ''
+                return (
+                  <div
+                    key={`${x}-${y}`}
+                    className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
+                    style={cell && material === 'classic' ? { backgroundColor: cell } : undefined}
+                  />
+                )
+              })
             )}
           </div>
           <div className="warning-line" />
@@ -465,9 +502,35 @@ function App() {
           )}
           {!gameStarted && !gameOver && (
             <div className="game-over-overlay">
-              <button className="restart-btn" onClick={startGame}>
-                开始游戏
-              </button>
+              <div className="material-selector">
+                <div className="material-title">选择方块材质</div>
+                <div className="material-options">
+                  <div
+                    className={`material-option ${material === 'classic' ? 'selected' : ''}`}
+                    onClick={() => setMaterial('classic')}
+                  >
+                    <div className="material-preview classic"></div>
+                    <span className="material-name">经典</span>
+                  </div>
+                  <div
+                    className={`material-option ${material === 'plush' ? 'selected' : ''}`}
+                    onClick={() => setMaterial('plush')}
+                  >
+                    <div className="material-preview plush"></div>
+                    <span className="material-name">毛绒</span>
+                  </div>
+                  <div
+                    className={`material-option ${material === 'crystal' ? 'selected' : ''}`}
+                    onClick={() => setMaterial('crystal')}
+                  >
+                    <div className="material-preview crystal"></div>
+                    <span className="material-name">水晶</span>
+                  </div>
+                </div>
+                <button className="start-btn" onClick={startGame}>
+                  开始游戏
+                </button>
+              </div>
             </div>
           )}
           <div className="mobile-controls">

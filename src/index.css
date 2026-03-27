@@ -391,3 +391,234 @@ body {
     max-width: 220px;
   }
 }
+
+/* Material: Plush (Furry Texture) */
+.cell.plush {
+  border-radius: 4px;
+  background: linear-gradient(145deg, #ffb6c1, #ff69b4) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 0 8px rgba(255, 105, 180, 0.5);
+  animation: plush-wobble 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.cell.plush::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.1) 2px,
+    rgba(255, 255, 255, 0.1) 4px
+  );
+  border-radius: 3px;
+}
+
+.cell.plush::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.3), transparent 60%);
+  border-radius: 3px;
+}
+
+@keyframes plush-wobble {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05, 0.95) rotate(-2deg); }
+  50% { transform: scale(0.95, 1.05) rotate(0deg); }
+  75% { transform: scale(1.03, 0.97) rotate(2deg); }
+}
+
+.cell.plush-landing {
+  animation: plush-land 0.4s ease-out;
+}
+
+@keyframes plush-land {
+  0% { transform: translateY(-5px) scale(1); }
+  40% { transform: translateY(2px) scale(0.95, 1.1); }
+  70% { transform: translateY(-1px) scale(1.02, 0.98); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Material: Crystal */
+.cell.crystal {
+  border-radius: 2px !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(200, 220, 255, 0.3)) !important;
+  box-shadow:
+    inset 0 0 10px rgba(255, 255, 255, 0.5),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 4px rgba(100, 150, 255, 0.2),
+    0 0 15px rgba(150, 180, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.cell.crystal::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 55%,
+    transparent 60%
+  );
+  animation: crystal-shine 3s ease-in-out infinite;
+}
+
+@keyframes crystal-shine {
+  0%, 100% { transform: translateX(-30%) translateY(-30%); }
+  50% { transform: translateX(30%) translateY(30%); }
+}
+
+.cell.crystal-shatter {
+  animation: crystal-shatter 0.5s ease-out forwards;
+}
+
+@keyframes crystal-shatter {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.1);
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+    filter: brightness(2);
+  }
+}
+
+/* Material Selection Screen */
+.material-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.material-title {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.material-options {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.material-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.material-option:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.material-option.selected {
+  border-color: #aa3bff;
+  background: rgba(170, 59, 255, 0.2);
+  box-shadow: 0 0 20px rgba(170, 59, 255, 0.3);
+}
+
+.material-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.material-preview.classic {
+  background: linear-gradient(145deg, #aa3bff, #8a2be2);
+}
+
+.material-preview.plush {
+  background: linear-gradient(145deg, #ffb6c1, #ff69b4);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    0 0 10px rgba(255, 105, 180, 0.5);
+}
+
+.material-preview.plush::before {
+  content: '';
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.2) 2px,
+    rgba(255, 255, 255, 0.2) 4px
+  );
+  border-radius: 4px;
+}
+
+.material-preview.crystal {
+  background: linear-gradient(135deg, rgba(200, 220, 255, 0.6), rgba(150, 180, 255, 0.4));
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 0 15px rgba(255, 255, 255, 0.5),
+    0 0 15px rgba(150, 180, 255, 0.4);
+}
+
+.material-name {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.start-btn {
+  margin-top: 15px;
+  padding: 12px 40px;
+  font-size: 1.1rem;
+  background: linear-gradient(145deg, #aa3bff, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(170, 59, 255, 0.4);
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(170, 59, 255, 0.5);
+}
