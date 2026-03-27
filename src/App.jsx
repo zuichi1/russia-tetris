@@ -339,6 +339,12 @@ function App() {
     hardDrop()
   }
 
+  const handlePauseTouch = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    togglePause()
+  }
+
   const startGame = useCallback(() => {
     restartGame()
   }, [restartGame])
@@ -465,8 +471,12 @@ function App() {
             </div>
           )}
           <div className="mobile-controls">
+            <div className="mobile-score">
+              <span>得分: {score}</span>
+            </div>
             <div className="mobile-row">
               <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch}>↻</button>
+              <button className="mobile-btn pause-btn" onTouchStart={handlePauseTouch}>⏸</button>
             </div>
             <div className="mobile-row">
               <button className="mobile-btn" onTouchStart={handleLeftTouch}>←</button>
