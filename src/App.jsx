@@ -1,0 +1,462 @@
+import { useState, useEffect, useCallback, useRef } from 'react'
+import './index.css'
+
+const BOARD_WIDTH = 10
+const BOARD_HEIGHT = 20
+const CELL_SIZE = 30
+const WARNING_LINE = 2
+
+const SHAPES = {
+  I: [
+    [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+    [[0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0]],
+    [[0,0,0,0],[0,0,0,0],[1,1,1,1],[0,0,0,0]],
+    [[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]]
+  ],
+  O: [
+    [[1,1],[1,1]],
+    [[1,1],[1,1]],
+    [[1,1],[1,1]],
+    [[1,1],[1,1]]
+  ],
+  T: [
+    [[0,1,0],[1,1,1],[0,0,0]],
+    [[0,1,0],[0,1,1],[0,1,0]],
+    [[0,0,0],[1,1,1],[0,1,0]],
+    [[0,1,0],[1,1,0],[0,1,0]]
+  ],
+  S: [
+    [[0,1,1],[1,1,0],[0,0,0]],
+    [[0,1,0],[0,1,1],[0,0,1]],
+    [[0,0,0],[0,1,1],[1,1,0]],
+    [[1,0,0],[1,1,0],[0,1,0]]
+  ],
+  Z: [
+    [[1,1,0],[0,1,1],[0,0,0]],
+    [[0,0,1],[0,1,1],[0,1,0]],
+    [[0,0,0],[1,1,0],[0,1,1]],
+    [[0,1,0],[1,1,0],[1,0,0]]
+  ],
+  J: [
+    [[1,0,0],[1,1,1],[0,0,0]],
+    [[0,1,1],[0,1,0],[0,1,0]],
+    [[0,0,0],[1,1,1],[0,0,1]],
+    [[0,1,0],[0,1,0],[1,1,0]]
+  ],
+  L: [
+    [[0,0,1],[1,1,1],[0,0,0]],
+    [[0,1,0],[0,1,0],[0,1,1]],
+    [[0,0,0],[1,1,1],[1,0,0]],
+    [[1,1,0],[0,1,0],[0,1,0]]
+  ]
+}
+
+const COLORS = {
+  I: '#00f0f0',
+  O: '#f0f000',
+  T: '#a000f0',
+  S: '#00f000',
+  Z: '#f00000',
+  J: '#0000f0',
+  L: '#f0a000'
+}
+
+const createEmptyBoard = () =>
+  Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null))
+
+const PIECES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L']
+
+function getRandomPiece() {
+  const type = PIECES[Math.floor(Math.random() * PIECES.length)]
+  return {
+    type,
+    shapes: SHAPES[type],
+    color: COLORS[type],
+    rotation: 0
+  }
+}
+
+function getShape(piece) {
+  return piece.shapes[piece.rotation]
+}
+
+function App() {
+  const [board, setBoard] = useState(createEmptyBoard)
+  const [piece, setPiece] = useState(getRandomPiece)
+  const [pos, setPos] = useState({ x: 3, y: 0 })
+  const [score, setScore] = useState(0)
+  const [gameOver, setGameOver] = useState(false)
+  const [gameStarted, setGameStarted] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const boardRef = useRef(board)
+  const pieceRef = useRef(piece)
+  const posRef = useRef(pos)
+  const gameOverRef = useRef(gameOver)
+  const isPausedRef = useRef(isPaused)
+
+  useEffect(() => { boardRef.current = board }, [board])
+  useEffect(() => { pieceRef.current = piece }, [piece])
+  useEffect(() => { posRef.current = pos }, [pos])
+  useEffect(() => { gameOverRef.current = gameOver }, [gameOver])
+  useEffect(() => { isPausedRef.current = isPaused }, [isPaused])
+
+  const isValidPosition = useCallback((newPiece, newPos, boardState = boardRef.current) => {
+    const shape = getShape(newPiece)
+    for (let y = 0; y < shape.length; y++) {
+      for (let x = 0; x < shape[y].length; x++) {
+        if (shape[y][x]) {
+          const boardX = newPos.x + x
+          const boardY = newPos.y + y
+          if (boardX < 0 || boardX >= BOARD_WIDTH || boardY >= BOARD_HEIGHT) {
+            return false
+          }
+          if (boardY >= 0 && boardState[boardY][boardX]) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  }, [])
+
+  const lockPieceToBoard = useCallback(() => {
+    const currentPiece = pieceRef.current
+    const currentPos = posRef.current
+    const newBoard = boardRef.current.map(row => [...row])
+    const shape = getShape(currentPiece)
+    let reachedWarningLine = false
+
+    for (let y = 0; y < shape.length; y++) {
+      for (let x = 0; x < shape[y].length; x++) {
+        if (shape[y][x]) {
+          const boardY = currentPos.y + y
+          const boardX = currentPos.x + x
+          if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
+            newBoard[boardY][boardX] = currentPiece.color
+          }
+          if (boardY < WARNING_LINE) {
+            reachedWarningLine = true
+          }
+        }
+      }
+    }
+
+    if (reachedWarningLine) {
+      return { board: newBoard, gameOver: true }
+    }
+
+    return { board: newBoard, gameOver: false }
+  }, [])
+
+  const clearLines = useCallback((boardState) => {
+    const newBoard = boardState.filter(row => row.some(cell => cell === null))
+    const clearedCount = BOARD_HEIGHT - newBoard.length
+    while (newBoard.length < BOARD_HEIGHT) {
+      newBoard.unshift(Array(BOARD_WIDTH).fill(null))
+    }
+    return { board: newBoard, clearedCount }
+  }, [])
+
+  const spawnNewPiece = useCallback(() => {
+    const newPiece = getRandomPiece()
+    const startX = Math.floor((BOARD_WIDTH - getShape(newPiece)[0].length) / 2)
+    const startPos = { x: startX, y: 0 }
+
+    if (!isValidPosition(newPiece, startPos, createEmptyBoard())) {
+      return false
+    }
+
+    setPiece(newPiece)
+    pieceRef.current = newPiece
+    setPos(startPos)
+    posRef.current = startPos
+    return true
+  }, [isValidPosition])
+
+  const moveDown = useCallback(() => {
+    if (gameOverRef.current || !gameStarted || isPausedRef.current) return
+
+    const newPos = { x: posRef.current.x, y: posRef.current.y + 1 }
+
+    if (isValidPosition(pieceRef.current, newPos)) {
+      setPos(newPos)
+      posRef.current = newPos
+    } else {
+      const { board: boardAfterLock, gameOver } = lockPieceToBoard()
+      if (gameOver) {
+        setGameOver(true)
+        setBoard(boardAfterLock)
+        return
+      }
+      const { board: clearedBoard, clearedCount } = clearLines(boardAfterLock)
+      setBoard(clearedBoard)
+      boardRef.current = clearedBoard
+      if (clearedCount > 0) {
+        setScore(s => s + clearedCount * 100)
+      }
+      if (!spawnNewPiece()) {
+        setGameOver(true)
+      }
+    }
+  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece])
+
+  const moveLeft = useCallback(() => {
+    if (gameOverRef.current || !gameStarted || isPausedRef.current) return
+    const newPos = { x: posRef.current.x - 1, y: posRef.current.y }
+    if (isValidPosition(pieceRef.current, newPos)) {
+      setPos(newPos)
+      posRef.current = newPos
+    }
+  }, [gameStarted, isValidPosition])
+
+  const moveRight = useCallback(() => {
+    if (gameOverRef.current || !gameStarted || isPausedRef.current) return
+    const newPos = { x: posRef.current.x + 1, y: posRef.current.y }
+    if (isValidPosition(pieceRef.current, newPos)) {
+      setPos(newPos)
+      posRef.current = newPos
+    }
+  }, [gameStarted, isValidPosition])
+
+  const rotate = useCallback(() => {
+    if (gameOverRef.current || !gameStarted || isPausedRef.current) return
+
+    const currentPiece = pieceRef.current
+    const newPiece = {
+      ...currentPiece,
+      rotation: (currentPiece.rotation + 1) % 4
+    }
+
+    if (isValidPosition(newPiece, posRef.current)) {
+      setPiece(newPiece)
+      pieceRef.current = newPiece
+      return
+    }
+
+    const kicks = [-1, 1, -2, 2]
+    for (const kick of kicks) {
+      const newPos = { x: posRef.current.x + kick, y: posRef.current.y }
+      if (isValidPosition(newPiece, newPos)) {
+        setPiece(newPiece)
+        pieceRef.current = newPiece
+        setPos(newPos)
+        posRef.current = newPos
+        return
+      }
+    }
+  }, [gameStarted, isValidPosition])
+
+  const hardDrop = useCallback(() => {
+    if (gameOverRef.current || !gameStarted || isPausedRef.current) return
+
+    let newPos = { ...posRef.current }
+    while (isValidPosition(pieceRef.current, { x: newPos.x, y: newPos.y + 1 })) {
+      newPos.y++
+    }
+
+    setPos(newPos)
+    posRef.current = newPos
+
+    const { board: boardAfterLock, gameOver } = lockPieceToBoard()
+    if (gameOver) {
+      setGameOver(true)
+      setBoard(boardAfterLock)
+      return
+    }
+
+    const { board: clearedBoard, clearedCount } = clearLines(boardAfterLock)
+    setBoard(clearedBoard)
+    boardRef.current = clearedBoard
+    if (clearedCount > 0) {
+      setScore(s => s + clearedCount * 100)
+    }
+    if (!spawnNewPiece()) {
+      setGameOver(true)
+    }
+  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece])
+
+  const restartGame = useCallback(() => {
+    const newBoard = createEmptyBoard()
+    const newPiece = getRandomPiece()
+    const startX = Math.floor((BOARD_WIDTH - getShape(newPiece)[0].length) / 2)
+
+    setBoard(newBoard)
+    boardRef.current = newBoard
+    setPiece(newPiece)
+    pieceRef.current = newPiece
+    setPos({ x: startX, y: 0 })
+    posRef.current = { x: startX, y: 0 }
+    setScore(0)
+    setGameOver(false)
+    gameOverRef.current = false
+    setIsPaused(false)
+    isPausedRef.current = false
+    setGameStarted(true)
+  }, [])
+
+  const startGame = useCallback(() => {
+    restartGame()
+  }, [restartGame])
+
+  const togglePause = useCallback(() => {
+    if (gameOverRef.current || !gameStarted) return
+    setIsPaused(p => !p)
+  }, [gameStarted])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (gameOverRef.current && e.key.toLowerCase() !== 'r') return
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          moveLeft()
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          moveRight()
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          moveDown()
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          rotate()
+          break
+        case ' ':
+          e.preventDefault()
+          hardDrop()
+          break
+        case 'r':
+        case 'R':
+          e.preventDefault()
+          restartGame()
+          break
+        case 'p':
+        case 'P':
+          e.preventDefault()
+          togglePause()
+          break
+        default:
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [moveLeft, moveRight, moveDown, rotate, hardDrop, restartGame, togglePause])
+
+  useEffect(() => {
+    if (!gameStarted || gameOver) return
+
+    const interval = setInterval(() => {
+      moveDown()
+    }, 500)
+
+    return () => clearInterval(interval)
+  }, [gameStarted, gameOver, moveDown])
+
+  const renderBoard = () => {
+    const displayBoard = board.map(row => [...row])
+    const shape = getShape(piece)
+
+    for (let y = 0; y < shape.length; y++) {
+      for (let x = 0; x < shape[y].length; x++) {
+        if (shape[y][x]) {
+          const boardY = pos.y + y
+          const boardX = pos.x + x
+          if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
+            displayBoard[boardY][boardX] = piece.color
+          }
+        }
+      }
+    }
+
+    return displayBoard
+  }
+
+  const displayBoard = renderBoard()
+
+  return (
+    <div className="game-container">
+      <h1 className="game-title">俄罗斯方块</h1>
+      <div className="game-area">
+        <div className="board-wrapper">
+          <div
+            className="board"
+            style={{
+              width: BOARD_WIDTH * CELL_SIZE,
+              height: BOARD_HEIGHT * CELL_SIZE
+            }}
+          >
+            {displayBoard.map((row, y) =>
+              row.map((cell, x) => (
+                <div
+                  key={`${x}-${y}`}
+                  className={`cell ${cell ? 'filled' : ''} ${y < WARNING_LINE ? 'warning-zone' : ''}`}
+                  style={{
+                    width: CELL_SIZE,
+                    height: CELL_SIZE,
+                    backgroundColor: cell || undefined
+                  }}
+                />
+              ))
+            )}
+          </div>
+          <div className="warning-line" style={{ top: WARNING_LINE * CELL_SIZE - 2 }} />
+          <div className="board-border" style={{
+            width: BOARD_WIDTH * CELL_SIZE + 6,
+            height: BOARD_HEIGHT * CELL_SIZE + 6,
+            borderWidth: BOARD_WIDTH * CELL_SIZE + 6 > 0 ? 3 : 0
+          }} />
+          {gameOver && (
+            <div className="game-over-overlay">
+              <div className="game-over-text">游戏结束</div>
+              <div className="final-score">最终得分: {score}</div>
+              <button className="restart-btn" onClick={restartGame}>
+                重新开始 (R)
+              </button>
+            </div>
+          )}
+          {isPaused && !gameOver && (
+            <div className="game-over-overlay">
+              <div className="pause-text">游戏暂停</div>
+              <button className="restart-btn" onClick={togglePause}>
+                继续游戏 (P)
+              </button>
+            </div>
+          )}
+          {!gameStarted && !gameOver && (
+            <div className="game-over-overlay">
+              <button className="restart-btn" onClick={startGame}>
+                开始游戏
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="side-panel">
+          <div className="score-panel">
+            <h2>得分</h2>
+            <div className="score-value">{score}</div>
+          </div>
+          <div className="controls-panel">
+            <h2>操作说明</h2>
+            <ul>
+              <li><span className="key">←</span> 左移</li>
+              <li><span className="key">→</span> 右移</li>
+              <li><span className="key">↓</span> 下移</li>
+              <li><span className="key">↑</span> 旋转</li>
+              <li><span className="key">空格</span> 快速下落</li>
+              <li><span className="key">P</span> 暂停/继续</li>
+              <li><span className="key">R</span> 重新开始</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default App
