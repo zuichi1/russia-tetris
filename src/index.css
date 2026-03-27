@@ -40,25 +40,19 @@ body {
 }
 
 .board {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(20, 30px);
   background: rgba(0, 0, 0, 0.3);
   position: relative;
-}
-
-.board-border {
-  position: absolute;
-  top: -3px;
-  left: -3px;
   border: 3px solid #aa3bff;
   border-radius: 4px;
   box-shadow: 0 0 30px rgba(170, 59, 255, 0.3);
-  pointer-events: none;
 }
 
 .cell {
   border: 1px solid rgba(255, 255, 255, 0.05);
-  flex-shrink: 0;
+  background-color: transparent;
 }
 
 .cell.filled {
@@ -79,8 +73,9 @@ body {
 
 .warning-line {
   position: absolute;
-  left: -3px;
-  right: -3px;
+  left: 0;
+  right: 0;
+  top: 60px;
   height: 2px;
   background: linear-gradient(90deg, #ff4444, #ff6666, #ff4444);
   box-shadow: 0 0 10px #ff4444;
@@ -272,7 +267,7 @@ body {
     align-items: center;
     padding: 10px;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     justify-content: center;
   }
 
@@ -286,9 +281,19 @@ body {
     margin: 0 auto;
   }
 
+  .board {
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    width: 90vw;
+    max-width: 300px;
+    height: auto;
+    aspect-ratio: 10 / 20;
+  }
+
   .cell {
-    width: min(5vw, 25px);
-    height: min(5vw, 25px);
+    width: 100% !important;
+    height: 100% !important;
+    background-color: transparent;
   }
 
   .game-area {
@@ -298,12 +303,24 @@ body {
   }
 
   body {
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
   #root {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
+  }
+
+  .warning-line {
+    top: 0;
+    height: 2px;
+  }
+
+  .game-over-overlay {
+    width: 90vw;
+    max-width: 300px;
+    height: auto;
+    aspect-ratio: 10 / 20;
   }
 }
 
@@ -311,11 +328,6 @@ body {
   .game-title {
     font-size: 1.2rem;
     margin-bottom: 8px;
-  }
-
-  .cell {
-    width: min(4.5vw, 18px);
-    height: min(4.5vw, 18px);
   }
 
   .mobile-btn {
@@ -329,10 +341,6 @@ body {
     width: 110px;
   }
 
-  .warning-line {
-    top: 48px !important;
-  }
-
   .mobile-controls {
     bottom: 10px;
   }
@@ -341,17 +349,16 @@ body {
     gap: 8px;
     margin: 3px 0;
   }
+
+  .board {
+    max-width: 260px;
+  }
 }
 
 @media (max-height: 700px) and (max-width: 500px) {
   .game-title {
     font-size: 1rem;
     margin-bottom: 5px;
-  }
-
-  .cell {
-    width: min(4vw, 16px);
-    height: min(4vw, 16px);
   }
 
   .mobile-btn {
@@ -362,5 +369,9 @@ body {
   .rotate-btn,
   .drop-btn {
     width: 100px;
+  }
+
+  .board {
+    max-width: 220px;
   }
 }

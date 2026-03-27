@@ -409,33 +409,18 @@ function App() {
       <h1 className="game-title">俄罗斯方块</h1>
       <div className="game-area">
         <div className="board-wrapper">
-          <div
-            className="board"
-            style={{
-              width: BOARD_WIDTH * CELL_SIZE,
-              height: BOARD_HEIGHT * CELL_SIZE
-            }}
-          >
+          <div className="board">
             {displayBoard.map((row, y) =>
               row.map((cell, x) => (
                 <div
                   key={`${x}-${y}`}
                   className={`cell ${cell ? 'filled' : ''} ${y < WARNING_LINE ? 'warning-zone' : ''}`}
-                  style={{
-                    width: CELL_SIZE,
-                    height: CELL_SIZE,
-                    backgroundColor: cell || undefined
-                  }}
+                  style={cell ? { backgroundColor: cell } : undefined}
                 />
               ))
             )}
           </div>
-          <div className="warning-line" style={{ top: WARNING_LINE * CELL_SIZE - 2 }} />
-          <div className="board-border" style={{
-            width: BOARD_WIDTH * CELL_SIZE + 6,
-            height: BOARD_HEIGHT * CELL_SIZE + 6,
-            borderWidth: BOARD_WIDTH * CELL_SIZE + 6 > 0 ? 3 : 0
-          }} />
+          <div className="warning-line" />
           {gameOver && (
             <div className="game-over-overlay">
               <div className="game-over-text">游戏结束</div>
