@@ -295,28 +295,47 @@ function App() {
     setGameStarted(true)
   }, [])
 
+  const touchActiveRef = useRef(false)
+
   const handleRotateTouch = (e) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (touchActiveRef.current) return
+    touchActiveRef.current = true
     rotate()
+    setTimeout(() => { touchActiveRef.current = false }, 150)
   }
 
   const handleLeftTouch = (e) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (touchActiveRef.current) return
+    touchActiveRef.current = true
     moveLeft()
+    setTimeout(() => { touchActiveRef.current = false }, 150)
   }
 
   const handleRightTouch = (e) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (touchActiveRef.current) return
+    touchActiveRef.current = true
     moveRight()
+    setTimeout(() => { touchActiveRef.current = false }, 150)
   }
 
   const handleDownTouch = (e) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (touchActiveRef.current) return
+    touchActiveRef.current = true
     moveDown()
+    setTimeout(() => { touchActiveRef.current = false }, 150)
   }
 
   const handleHardDropTouch = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     hardDrop()
   }
 

@@ -256,6 +256,8 @@ body {
 @media (max-width: 768px) {
   .mobile-controls {
     display: block;
+    position: relative;
+    margin-top: 15px;
   }
 
   .side-panel {
@@ -266,14 +268,16 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 10px;
+    padding-bottom: 20px;
     width: 100%;
     min-height: 100vh;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .game-title {
     font-size: 1.5rem;
     margin-bottom: 10px;
+    margin-top: 10px;
     letter-spacing: 4px;
   }
 
@@ -302,25 +306,8 @@ body {
     gap: 10px;
   }
 
-  body {
-    overflow-x: hidden;
-  }
-
-  #root {
-    width: 100%;
-    min-height: 100vh;
-  }
-
   .warning-line {
-    top: 0;
-    height: 2px;
-  }
-
-  .game-over-overlay {
-    width: 90vw;
-    max-width: 300px;
-    height: auto;
-    aspect-ratio: 10 / 20;
+    top: 0 !important;
   }
 }
 
@@ -339,10 +326,6 @@ body {
   .rotate-btn,
   .drop-btn {
     width: 110px;
-  }
-
-  .mobile-controls {
-    bottom: 10px;
   }
 
   .mobile-row {
