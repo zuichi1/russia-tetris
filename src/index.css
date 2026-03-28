@@ -509,17 +509,18 @@ body {
 @media (max-width: 768px) {
   .mobile-right-panel {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
-    width: 40%;
-    min-width: 140px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .mobile-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
 
   .mobile-score {
@@ -583,32 +584,33 @@ body {
   }
 
   .game-container {
-    flex-direction: row;
-    align-items: flex-start;
-    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
     width: 100%;
     min-height: 100vh;
-    justify-content: center;
-    gap: 10px;
+    justify-content: flex-start;
   }
 
   .game-area {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 10px;
-    width: 60%;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
   }
 
   .board-wrapper {
     margin: 0;
     width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .board {
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(20, 1fr);
-    width: 100%;
-    max-width: 250px;
+    width: 80vw;
+    max-width: 280px;
     height: auto;
     aspect-ratio: 10 / 20;
   }
@@ -625,29 +627,32 @@ body {
 
   .mobile-side-panel {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
+    flex-direction: row;
+    gap: 8px;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .mobile-material-section {
-    padding: 8px;
+    padding: 6px 10px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     border: 1px solid rgba(170, 59, 255, 0.3);
+    min-width: 120px;
   }
 
   .mobile-section-title {
     color: #aa3bff;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-align: center;
   }
 
   .mobile-material-options {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
   }
 
@@ -681,10 +686,11 @@ body {
   }
 
   .mobile-leaderboard-section {
-    padding: 8px;
+    padding: 6px 10px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     border: 1px solid rgba(170, 59, 255, 0.3);
+    min-width: 120px;
   }
 
   .mobile-leaderboard {
