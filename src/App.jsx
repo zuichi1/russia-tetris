@@ -698,7 +698,7 @@ function App() {
               <div className="leaderboard-empty">暂无记录</div>
             ) : (
               <ol className="leaderboard-list">
-                {leaderboard.map((entry, index) => (
+                {leaderboard.slice(0, 5).map((entry, index) => (
                   <li key={index} className="leaderboard-item">
                     <span className="leaderboard-rank">{index + 1}</span>
                     <span className="leaderboard-name">{entry.name}</span>
