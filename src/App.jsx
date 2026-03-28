@@ -609,6 +609,8 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+        <div className="mobile-right-panel">
           <div className="mobile-controls">
             <div className="mobile-score">
               <span>得分: {score}</span>
@@ -625,18 +627,23 @@ function App() {
             <div className="mobile-row">
               <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch}>↓↓</button>
             </div>
-            <div className="mobile-row material-row">
-              <button
-                className={`mobile-btn material-btn ${material === 'classic' ? 'active' : ''}`}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('classic') }}
-              >经典</button>
-              <button
-                className={`mobile-btn material-btn ${material === 'plush' ? 'active' : ''}`}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
-              >晶体</button>
+          </div>
+          <div className="mobile-side-panel">
+            <div className="mobile-material-section">
+              <div className="mobile-section-title">材质</div>
+              <div className="mobile-material-options">
+                <button
+                  className={`mobile-material-btn ${material === 'classic' ? 'active' : ''}`}
+                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('classic') }}
+                >经典</button>
+                <button
+                  className={`mobile-material-btn ${material === 'plush' ? 'active' : ''}`}
+                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
+                >晶体</button>
+              </div>
             </div>
-            <div className="mobile-leaderboard">
-              <div className="mobile-leaderboard-title">排行榜</div>
+            <div className="mobile-leaderboard-section">
+              <div className="mobile-section-title">排行榜</div>
               {leaderboard.length === 0 ? (
                 <div className="mobile-leaderboard-empty">暂无记录</div>
               ) : (
@@ -653,6 +660,7 @@ function App() {
             </div>
           </div>
         </div>
+      </div>
         <div className="side-panel">
           <div className="score-panel">
             <h2>得分</h2>
