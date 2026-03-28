@@ -109,7 +109,7 @@ function App() {
     setLeaderboard(prev => {
       const updated = [...prev, newEntry]
         .sort((a, b) => b.score - a.score)
-        .slice(0, 10)
+        .slice(0, 5)
       localStorage.setItem('tetris-leaderboard', JSON.stringify(updated))
       return updated
     })
@@ -501,134 +501,117 @@ function App() {
     <div className="game-container">
       <h1 className="game-title">俄罗斯方块</h1>
       <div className="game-area">
-        <div className="board-wrapper">
-          <div className="board">
-            {displayBoard.map((row, y) =>
-              row.map((cell, x) => {
-                const isFalling = fallingCells.has(`${x},${y}`)
-                const isClearing = clearingRows.includes(y)
-                const isDropping = droppingRows.includes(y)
-                const isCrystal = material === 'crystal'
-                const isPlush = material === 'plush'
-                const cellClass = cell
-                  ? isClearing && isCrystal
-                    ? 'filled crystal crystal-dissolve'
-                    : isDropping && isCrystal
-                      ? 'filled crystal crystal-drop'
-                      : isCrystal
-                        ? 'filled crystal'
-                        : isPlush
-                          ? 'filled plush'
-                          : 'filled'
-                  : ''
-                const cellStyle = cell ? { backgroundColor: cell } : undefined
-                return (
-                  <div
-                    key={`${x}-${y}`}
-                    className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
-                    style={cellStyle}
-                  />
-                )
-              })
-            )}
-          </div>
-          <div className="warning-line" />
-          {showNameInput && (
-            <div className="game-over-overlay">
-              <div className="name-input-title">恭喜！请输入你的名字</div>
-              <div className="name-input-score">得分: {pendingScoreRef.current}</div>
-              <input
-                type="text"
-                className="name-input"
-                placeholder="输入名字"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                maxLength={12}
-              />
-              <button className="restart-btn" onClick={() => { saveToLeaderboard(pendingScoreRef.current, playerName); setShowNameInput(false); }}>
-                保存成绩
-              </button>
+        <div className="mobile-main-row">
+          <div className="board-wrapper">
+            <div className="board">
+              {displayBoard.map((row, y) =>
+                row.map((cell, x) => {
+                  const isFalling = fallingCells.has(`${x},${y}`)
+                  const isClearing = clearingRows.includes(y)
+                  const isDropping = droppingRows.includes(y)
+                  const isCrystal = material === 'crystal'
+                  const isPlush = material === 'plush'
+                  const cellClass = cell
+                    ? isClearing && isCrystal
+                      ? 'filled crystal crystal-dissolve'
+                      : isDropping && isCrystal
+                        ? 'filled crystal crystal-drop'
+                        : isCrystal
+                          ? 'filled crystal'
+                          : isPlush
+                            ? 'filled plush'
+                            : 'filled'
+                    : ''
+                  const cellStyle = cell ? { backgroundColor: cell } : undefined
+                  return (
+                    <div
+                      key={`${x}-${y}`}
+                      className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
+                      style={cellStyle}
+                    />
+                  )
+                })
+              )}
             </div>
-          )}
-          {gameOver && !showNameInput && (
-            <div className="game-over-overlay">
-              <div className="game-over-text">游戏结束</div>
-              <div className="final-score">最终得分: {score}</div>
-              <button className="restart-btn" onClick={restartGame}>
-                重新开始 (R)
-              </button>
-            </div>
-          )}
-          {isPaused && !gameOver && (
-            <div className="game-over-overlay">
-              <div className="pause-text">游戏暂停</div>
-              <button className="restart-btn" onClick={togglePause}>
-                继续游戏 (P)
-              </button>
-            </div>
-          )}
-          {!gameStarted && !gameOver && (
-            <div className="game-over-overlay">
-              <div className="material-selector">
-                <div className="material-title">选择方块材质</div>
-                <div className="material-options">
-                  <div
-                    className={`material-option ${material === 'classic' ? 'selected' : ''}`}
-                    onClick={() => setMaterial('classic')}
-                  >
-                    <div className="material-preview classic">
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                    </div>
-                    <span className="material-name">经典</span>
-                  </div>
-                  <div
-                    className={`material-option ${material === 'plush' ? 'selected' : ''}`}
-                    onClick={() => setMaterial('plush')}
-                  >
-                    <div className="material-preview plush">
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                      <div className="preview-cell"></div>
-                    </div>
-                    <span className="material-name">晶体</span>
-                  </div>
-                </div>
-                <button className="start-btn" onClick={startGame}>
-                  开始游戏
+            <div className="warning-line" />
+            {showNameInput && (
+              <div className="game-over-overlay">
+                <div className="name-input-title">恭喜！请输入你的名字</div>
+                <div className="name-input-score">得分: {pendingScoreRef.current}</div>
+                <input
+                  type="text"
+                  className="name-input"
+                  placeholder="输入名字"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  maxLength={12}
+                />
+                <button className="restart-btn" onClick={() => { saveToLeaderboard(pendingScoreRef.current, playerName); setShowNameInput(false); }}>
+                  保存成绩
                 </button>
               </div>
-            </div>
-          )}
-        </div>
-        <div className="mobile-right-panel">
-          <div className="mobile-controls">
-            <div className="mobile-score">
-              <span>得分: {score}</span>
-            </div>
-            <div className="mobile-row">
-              <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch}>↻</button>
-              <button className="mobile-btn pause-btn" onTouchStart={handlePauseTouch}>⏸</button>
-            </div>
-            <div className="mobile-row">
-              <button className="mobile-btn" onTouchStart={handleLeftTouch}>←</button>
-              <button className="mobile-btn" onTouchStart={handleDownTouch}>↓</button>
-              <button className="mobile-btn" onTouchStart={handleRightTouch}>→</button>
-            </div>
-            <div className="mobile-row">
-              <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch}>↓↓</button>
-            </div>
+            )}
+            {gameOver && !showNameInput && (
+              <div className="game-over-overlay">
+                <div className="game-over-text">游戏结束</div>
+                <div className="final-score">最终得分: {score}</div>
+                <button className="restart-btn" onClick={restartGame}>
+                  重新开始 (R)
+                </button>
+              </div>
+            )}
+            {isPaused && !gameOver && (
+              <div className="game-over-overlay">
+                <div className="pause-text">游戏暂停</div>
+                <button className="restart-btn" onClick={togglePause}>
+                  继续游戏 (P)
+                </button>
+              </div>
+            )}
+            {!gameStarted && !gameOver && (
+              <div className="game-over-overlay">
+                <div className="material-selector">
+                  <div className="material-title">选择方块材质</div>
+                  <div className="material-options">
+                    <div
+                      className={`material-option ${material === 'classic' ? 'selected' : ''}`}
+                      onClick={() => setMaterial('classic')}
+                    >
+                      <div className="material-preview classic">
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                      </div>
+                      <span className="material-name">经典</span>
+                    </div>
+                    <div
+                      className={`material-option ${material === 'plush' ? 'selected' : ''}`}
+                      onClick={() => setMaterial('plush')}
+                    >
+                      <div className="material-preview plush">
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                        <div className="preview-cell"></div>
+                      </div>
+                      <span className="material-name">晶体</span>
+                    </div>
+                  </div>
+                  <button className="start-btn" onClick={startGame}>
+                    开始游戏
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="mobile-side-panel">
+          <div className="mobile-right-panel">
             <div className="mobile-material-section">
               <div className="mobile-section-title">材质</div>
               <div className="mobile-material-options">
@@ -658,6 +641,23 @@ function App() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+        <div className="mobile-controls">
+          <div className="mobile-score">
+            <span>得分: {score}</span>
+          </div>
+          <div className="mobile-row">
+            <button className="mobile-btn rotate-btn" onTouchStart={handleRotateTouch}>↻</button>
+            <button className="mobile-btn pause-btn" onTouchStart={handlePauseTouch}>⏸</button>
+          </div>
+          <div className="mobile-row">
+            <button className="mobile-btn" onTouchStart={handleLeftTouch}>←</button>
+            <button className="mobile-btn" onTouchStart={handleDownTouch}>↓</button>
+            <button className="mobile-btn" onTouchStart={handleRightTouch}>→</button>
+          </div>
+          <div className="mobile-row">
+            <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch}>↓↓</button>
           </div>
         </div>
         <div className="side-panel">

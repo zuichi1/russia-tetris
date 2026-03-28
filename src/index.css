@@ -510,14 +510,26 @@ body {
   display: none;
 }
 
+.mobile-main-row {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .mobile-right-panel {
+  .mobile-main-row {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .mobile-right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: auto;
+    max-width: 120px;
   }
 
   .mobile-controls {
@@ -525,6 +537,8 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    width: 100%;
+    margin-top: 10px;
   }
 
   .mobile-score {
