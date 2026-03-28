@@ -90,6 +90,30 @@ function App() {
   const [isPaused, setIsPaused] = useState(false)
   const [material, setMaterial] = useState('classic')
   const [clearingRows, setClearingRows] = useState([])
+  const [droppingRows, setDroppingRows] = useState([])
+  const [leaderboard, setLeaderboard] = useState(() => {
+    const saved = localStorage.getItem('tetris-leaderboard')
+    return saved ? JSON.parse(saved) : []
+  })
+  const [showNameInput, setShowNameInput] = useState(false)
+  const [playerName, setPlayerName] = useState('')
+  const pendingScoreRef = useRef(0)
+
+  const saveToLeaderboard = useCallback((finalScore, name) => {
+    if (finalScore <= 0) return
+    const newEntry = {
+      score: finalScore,
+      name: name.trim() || '匿名',
+      date: new Date().toLocaleDateString()
+    }
+    setLeaderboard(prev => {
+      const updated = [...prev, newEntry]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10)
+      localStorage.setItem('tetris-leaderboard', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
 
   const boardRef = useRef(board)
   const pieceRef = useRef(piece)
@@ -191,18 +215,25 @@ function App() {
     } else {
       const { board: boardAfterLock, gameOver } = lockPieceToBoard()
       if (gameOver) {
+        pendingScoreRef.current = score
         setGameOver(true)
         setBoard(boardAfterLock)
+        setShowNameInput(true)
         return
       }
       const { board: clearedBoard, clearedCount, clearedRows } = clearLines(boardAfterLock)
       if (material === 'crystal' && clearedRows.length > 0) {
         setClearingRows(clearedRows)
         setTimeout(() => {
+          setClearingRows([])
           setBoard(clearedBoard)
           boardRef.current = clearedBoard
-          setClearingRows([])
-        }, 500)
+          const dropRows = clearedRows.map(r => r - clearedRows.length).filter(r => r >= 0)
+          if (dropRows.length > 0) {
+            setDroppingRows(dropRows)
+            setTimeout(() => setDroppingRows([]), 400)
+          }
+        }, 600)
       } else {
         setBoard(clearedBoard)
         boardRef.current = clearedBoard
@@ -211,10 +242,13 @@ function App() {
         setScore(s => s + clearedCount * 100)
       }
       if (!spawnNewPiece()) {
+        pendingScoreRef.current = score + (clearedCount * 100)
         setGameOver(true)
+        setShowNameInput(true)
+        return
       }
     }
-  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece])
+  }, [gameStarted, isValidPosition, lockPieceToBoard, clearLines, spawnNewPiece, score])
 
   const moveLeft = useCallback(() => {
     if (gameOverRef.current || !gameStarted || isPausedRef.current) return
@@ -284,10 +318,15 @@ function App() {
     if (material === 'crystal' && clearedRows.length > 0) {
       setClearingRows(clearedRows)
       setTimeout(() => {
+        setClearingRows([])
         setBoard(clearedBoard)
         boardRef.current = clearedBoard
-        setClearingRows([])
-      }, 500)
+        const dropRows = clearedRows.map(r => r - clearedRows.length).filter(r => r >= 0)
+        if (dropRows.length > 0) {
+          setDroppingRows(dropRows)
+          setTimeout(() => setDroppingRows([]), 400)
+        }
+      }, 600)
     } else {
       setBoard(clearedBoard)
       boardRef.current = clearedBoard
@@ -312,11 +351,14 @@ function App() {
     setPos({ x: startX, y: 0 })
     posRef.current = { x: startX, y: 0 }
     setScore(0)
+    pendingScoreRef.current = 0
     setGameOver(false)
     gameOverRef.current = false
     setIsPaused(false)
     isPausedRef.current = false
     setGameStarted(true)
+    setShowNameInput(false)
+    setPlayerName('')
   }, [])
 
   const touchActiveRef = useRef(false)
@@ -465,25 +507,50 @@ function App() {
               row.map((cell, x) => {
                 const isFalling = fallingCells.has(`${x},${y}`)
                 const isClearing = clearingRows.includes(y)
+                const isDropping = droppingRows.includes(y)
+                const isCrystal = material === 'crystal'
+                const isPlush = material === 'plush'
                 const cellClass = cell
-                  ? isClearing && material === 'crystal'
-                    ? 'filled crystal crystal-shatter'
-                    : material !== 'classic'
-                      ? `filled ${material}`
-                      : 'filled'
+                  ? isClearing && isCrystal
+                    ? 'filled crystal crystal-dissolve'
+                    : isDropping && isCrystal
+                      ? 'filled crystal crystal-drop'
+                      : isCrystal
+                        ? 'filled crystal'
+                        : isPlush
+                          ? 'filled plush'
+                          : 'filled'
                   : ''
+                const cellStyle = cell ? { backgroundColor: cell } : undefined
                 return (
                   <div
                     key={`${x}-${y}`}
                     className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
-                    style={cell && material === 'classic' ? { backgroundColor: cell } : undefined}
+                    style={cellStyle}
                   />
                 )
               })
             )}
           </div>
           <div className="warning-line" />
-          {gameOver && (
+          {showNameInput && (
+            <div className="game-over-overlay">
+              <div className="name-input-title">恭喜！请输入你的名字</div>
+              <div className="name-input-score">得分: {pendingScoreRef.current}</div>
+              <input
+                type="text"
+                className="name-input"
+                placeholder="输入名字"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                maxLength={12}
+              />
+              <button className="restart-btn" onClick={() => { saveToLeaderboard(pendingScoreRef.current, playerName); setShowNameInput(false); }}>
+                保存成绩
+              </button>
+            </div>
+          )}
+          {gameOver && !showNameInput && (
             <div className="game-over-overlay">
               <div className="game-over-text">游戏结束</div>
               <div className="final-score">最终得分: {score}</div>
@@ -509,22 +576,31 @@ function App() {
                     className={`material-option ${material === 'classic' ? 'selected' : ''}`}
                     onClick={() => setMaterial('classic')}
                   >
-                    <div className="material-preview classic"></div>
+                    <div className="material-preview classic">
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                    </div>
                     <span className="material-name">经典</span>
                   </div>
                   <div
                     className={`material-option ${material === 'plush' ? 'selected' : ''}`}
                     onClick={() => setMaterial('plush')}
                   >
-                    <div className="material-preview plush"></div>
-                    <span className="material-name">毛绒</span>
-                  </div>
-                  <div
-                    className={`material-option ${material === 'crystal' ? 'selected' : ''}`}
-                    onClick={() => setMaterial('crystal')}
-                  >
-                    <div className="material-preview crystal"></div>
-                    <span className="material-name">水晶</span>
+                    <div className="material-preview plush">
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                    </div>
+                    <span className="material-name">晶体</span>
                   </div>
                 </div>
                 <button className="start-btn" onClick={startGame}>
@@ -549,12 +625,39 @@ function App() {
             <div className="mobile-row">
               <button className="mobile-btn drop-btn" onTouchStart={handleHardDropTouch}>↓↓</button>
             </div>
+            <div className="mobile-row material-row">
+              <button
+                className={`mobile-btn material-btn ${material === 'classic' ? 'active' : ''}`}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('classic') }}
+              >经典</button>
+              <button
+                className={`mobile-btn material-btn ${material === 'plush' ? 'active' : ''}`}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
+              >晶体</button>
+            </div>
           </div>
         </div>
         <div className="side-panel">
           <div className="score-panel">
             <h2>得分</h2>
             <div className="score-value">{score}</div>
+          </div>
+          <div className="material-panel">
+            <h2>材质</h2>
+            <div className="material-options-side">
+              <div
+                className={`material-option-side ${material === 'classic' ? 'active' : ''}`}
+                onClick={() => setMaterial('classic')}
+              >
+                <div className="material-preview-side classic"></div>
+              </div>
+              <div
+                className={`material-option-side ${material === 'plush' ? 'active' : ''}`}
+                onClick={() => setMaterial('plush')}
+              >
+                <div className="material-preview-side plush"></div>
+              </div>
+            </div>
           </div>
           <div className="controls-panel">
             <h2>操作说明</h2>
@@ -567,6 +670,22 @@ function App() {
               <li><span className="key">P</span> 暂停/继续</li>
               <li><span className="key">R</span> 重新开始</li>
             </ul>
+          </div>
+          <div className="leaderboard-panel">
+            <h2>排行榜</h2>
+            {leaderboard.length === 0 ? (
+              <div className="leaderboard-empty">暂无记录</div>
+            ) : (
+              <ol className="leaderboard-list">
+                {leaderboard.map((entry, index) => (
+                  <li key={index} className="leaderboard-item">
+                    <span className="leaderboard-rank">{index + 1}</span>
+                    <span className="leaderboard-name">{entry.name}</span>
+                    <span className="leaderboard-score">{entry.score}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         </div>
       </div>
