@@ -515,6 +515,16 @@ body {
 }
 
 @media (max-width: 768px) {
+  .mobile-main-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
   .game-area {
     display: flex;
     flex-direction: row;
