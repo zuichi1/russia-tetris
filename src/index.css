@@ -515,22 +515,32 @@ body {
 }
 
 @media (max-width: 768px) {
-  .mobile-main-row {
+  .game-area {
     display: flex;
     flex-direction: row;
-    gap: 8px;
-    width: 100%;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .game-area {
-    flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
     gap: 10px;
     width: 100%;
+    padding: 0 5px;
+  }
+
+  .board-wrapper {
+    margin: 0;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .board {
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    width: 70vw;
+    max-width: 240px;
+    height: auto;
+    aspect-ratio: 10 / 20;
   }
 
   .mobile-right-panel {
@@ -538,7 +548,8 @@ body {
     flex-direction: column;
     gap: 8px;
     width: auto;
-    max-width: 120px;
+    max-width: 35vw;
+    flex-shrink: 0;
   }
 
   .mobile-controls {
@@ -549,6 +560,103 @@ body {
     width: 100%;
     margin-top: 10px;
     flex-basis: 100%;
+  }
+
+  .mobile-material-section,
+  .mobile-leaderboard-section {
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(170, 59, 255, 0.3);
+  }
+
+  .mobile-section-title {
+    color: #aa3bff;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .mobile-material-options {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .mobile-material-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    background: rgba(170, 59, 255, 0.2);
+    border: 1px solid rgba(170, 59, 255, 0.4);
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .mobile-material-btn.active {
+    background: rgba(170, 59, 255, 0.5);
+  }
+
+  .mobile-leaderboard-empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+    text-align: center;
+  }
+
+  .mobile-leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    color: #fff;
+    padding: 2px 0;
+  }
+
+  .mobile-rank {
+    color: #aa3bff;
+    font-weight: bold;
+    width: 16px;
+  }
+
+  .mobile-rank-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0 4px;
+  }
+
+  .mobile-rank-score {
+    color: #fff;
+  }
+
+  .side-panel {
+    display: none;
+  }
+
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    width: 100%;
+    min-height: 100vh;
+    justify-content: flex-start;
+  }
+
+  .cell {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: transparent;
+  }
+
+  .warning-line {
+    top: 0 !important;
   }
 
   .mobile-score {
@@ -607,151 +715,12 @@ body {
       inset 0 -1px 0 rgba(0, 0, 0, 0.2);
   }
 
-  .side-panel {
-    display: none;
-  }
-
-  .game-container {
-    flex-direction: column;
-    align-items: center;
-    padding: 5px;
-    width: 100%;
-    min-height: 100vh;
-    justify-content: flex-start;
-  }
-
-  .game-area {
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    width: 100%;
-  }
-
-  .board-wrapper {
-    margin: 0;
-    width: auto;
-    display: flex;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .board {
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(20, 1fr);
-    width: 80vw;
-    max-width: 280px;
-    height: auto;
-    aspect-ratio: 10 / 20;
-  }
-
-  .cell {
-    width: 100% !important;
-    height: 100% !important;
-    background-color: transparent;
-  }
-
-  .warning-line {
-    top: 0 !important;
-  }
-
-  .mobile-side-panel {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    width: auto;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .mobile-material-section {
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    border: 1px solid rgba(170, 59, 255, 0.3);
-    min-width: 120px;
-  }
-
-  .mobile-section-title {
-    color: #aa3bff;
-    font-size: 0.7rem;
-    font-weight: bold;
-    margin-bottom: 6px;
-    text-align: center;
-  }
-
-  .mobile-material-options {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-  }
-
-  .mobile-material-btn {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 0.75rem;
-    background: linear-gradient(145deg, #555, #333);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    cursor: pointer;
+  .pause-btn {
     box-shadow:
-      0 2px 0 #222,
-      0 3px 6px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  }
-
-  .mobile-material-btn.active {
-    background: linear-gradient(145deg, #cc66ff, #9933ff);
-    box-shadow:
-      0 2px 0 #6622aa,
-      0 3px 6px rgba(0, 0, 0, 0.3),
+      0 3px 0 #aa6622,
+      0 4px 6px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2),
       inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  }
-
-  .mobile-material-btn:active {
-    transform: translateY(1px);
-  }
-
-  .mobile-leaderboard-section {
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    border: 1px solid rgba(170, 59, 255, 0.3);
-    min-width: 120px;
-  }
-
-  .mobile-leaderboard {
-    display: none;
-  }
-
-  .mobile-leaderboard-list {
-    gap: 3px;
-    max-width: 100%;
-  }
-
-  .mobile-leaderboard-item {
-    padding: 4px 6px;
-    font-size: 0.7rem;
-  }
-
-  .mobile-rank {
-    width: 16px;
-    height: 16px;
-    font-size: 0.6rem;
-    margin-right: 4px;
-  }
-
-  .mobile-rank-name {
-    max-width: 50px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .mobile-rank-score {
-    font-size: 0.65rem;
   }
 }
 
