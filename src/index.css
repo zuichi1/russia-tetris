@@ -458,15 +458,19 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 100%;
+  max-width: 280px;
 }
 
 .mobile-leaderboard-item {
   display: flex;
   align-items: center;
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .mobile-rank {
@@ -504,13 +508,38 @@ body {
 
 @media (max-width: 768px) {
   .mobile-controls {
-    display: block;
-    position: relative;
-    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 10px 5px;
+    margin-top: 10px;
   }
 
   .mobile-score {
     display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .mobile-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .mobile-leaderboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .side-panel {
