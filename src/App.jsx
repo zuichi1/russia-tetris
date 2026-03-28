@@ -660,7 +660,6 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
         <div className="side-panel">
           <div className="score-panel">
             <h2>得分</h2>
