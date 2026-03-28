@@ -635,6 +635,22 @@ function App() {
                 onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
               >晶体</button>
             </div>
+            <div className="mobile-leaderboard">
+              <div className="mobile-leaderboard-title">排行榜</div>
+              {leaderboard.length === 0 ? (
+                <div className="mobile-leaderboard-empty">暂无记录</div>
+              ) : (
+                <div className="mobile-leaderboard-list">
+                  {leaderboard.slice(0, 5).map((entry, index) => (
+                    <div key={index} className="mobile-leaderboard-item">
+                      <span className="mobile-rank">{index + 1}</span>
+                      <span className="mobile-rank-name">{entry.name}</span>
+                      <span className="mobile-rank-score">{entry.score}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="side-panel">
