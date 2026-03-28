@@ -501,146 +501,144 @@ function App() {
     <div className="game-container">
       <h1 className="game-title">俄罗斯方块</h1>
       <div className="game-area">
-        <div className="mobile-main-row">
-          <div className="board-wrapper">
-            <div className="board">
-              {displayBoard.map((row, y) =>
-                row.map((cell, x) => {
-                  const isFalling = fallingCells.has(`${x},${y}`)
-                  const isClearing = clearingRows.includes(y)
-                  const isDropping = droppingRows.includes(y)
-                  const isCrystal = material === 'crystal'
-                  const isPlush = material === 'plush'
-                  const cellClass = cell
-                    ? isClearing && isCrystal
-                      ? 'filled crystal crystal-dissolve'
-                      : isDropping && isCrystal
-                        ? 'filled crystal crystal-drop'
-                        : isCrystal
-                          ? 'filled crystal'
-                          : isPlush
-                            ? 'filled plush'
-                            : 'filled'
-                    : ''
-                  const cellStyle = cell ? { backgroundColor: cell } : undefined
-                  return (
-                    <div
-                      key={`${x}-${y}`}
-                      className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
-                      style={cellStyle}
-                    />
-                  )
-                })
-              )}
-            </div>
-            <div className="warning-line" />
-            {showNameInput && (
-              <div className="game-over-overlay">
-                <div className="name-input-title">恭喜！请输入你的名字</div>
-                <div className="name-input-score">得分: {pendingScoreRef.current}</div>
-                <input
-                  type="text"
-                  className="name-input"
-                  placeholder="输入名字"
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  maxLength={12}
-                />
-                <button className="restart-btn" onClick={() => { saveToLeaderboard(pendingScoreRef.current, playerName); setShowNameInput(false); }}>
-                  保存成绩
-                </button>
-              </div>
-            )}
-            {gameOver && !showNameInput && (
-              <div className="game-over-overlay">
-                <div className="game-over-text">游戏结束</div>
-                <div className="final-score">最终得分: {score}</div>
-                <button className="restart-btn" onClick={restartGame}>
-                  重新开始 (R)
-                </button>
-              </div>
-            )}
-            {isPaused && !gameOver && (
-              <div className="game-over-overlay">
-                <div className="pause-text">游戏暂停</div>
-                <button className="restart-btn" onClick={togglePause}>
-                  继续游戏 (P)
-                </button>
-              </div>
-            )}
-            {!gameStarted && !gameOver && (
-              <div className="game-over-overlay">
-                <div className="material-selector">
-                  <div className="material-title">选择方块材质</div>
-                  <div className="material-options">
-                    <div
-                      className={`material-option ${material === 'classic' ? 'selected' : ''}`}
-                      onClick={() => setMaterial('classic')}
-                    >
-                      <div className="material-preview classic">
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                      </div>
-                      <span className="material-name">经典</span>
-                    </div>
-                    <div
-                      className={`material-option ${material === 'plush' ? 'selected' : ''}`}
-                      onClick={() => setMaterial('plush')}
-                    >
-                      <div className="material-preview plush">
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                        <div className="preview-cell"></div>
-                      </div>
-                      <span className="material-name">晶体</span>
-                    </div>
-                  </div>
-                  <button className="start-btn" onClick={startGame}>
-                    开始游戏
-                  </button>
-                </div>
-              </div>
+        <div className="board-wrapper">
+          <div className="board">
+            {displayBoard.map((row, y) =>
+              row.map((cell, x) => {
+                const isFalling = fallingCells.has(`${x},${y}`)
+                const isClearing = clearingRows.includes(y)
+                const isDropping = droppingRows.includes(y)
+                const isCrystal = material === 'crystal'
+                const isPlush = material === 'plush'
+                const cellClass = cell
+                  ? isClearing && isCrystal
+                    ? 'filled crystal crystal-dissolve'
+                    : isDropping && isCrystal
+                      ? 'filled crystal crystal-drop'
+                      : isCrystal
+                        ? 'filled crystal'
+                        : isPlush
+                          ? 'filled plush'
+                          : 'filled'
+                  : ''
+                const cellStyle = cell ? { backgroundColor: cell } : undefined
+                return (
+                  <div
+                    key={`${x}-${y}`}
+                    className={`cell ${cellClass} ${y < WARNING_LINE && !cell ? 'warning-zone' : ''}`}
+                    style={cellStyle}
+                  />
+                )
+              })
             )}
           </div>
-          <div className="mobile-right-panel">
-            <div className="mobile-material-section">
-              <div className="mobile-section-title">材质</div>
-              <div className="mobile-material-options">
-                <button
-                  className={`mobile-material-btn ${material === 'classic' ? 'active' : ''}`}
-                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('classic') }}
-                >经典</button>
-                <button
-                  className={`mobile-material-btn ${material === 'plush' ? 'active' : ''}`}
-                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
-                >晶体</button>
+          <div className="warning-line" />
+          {showNameInput && (
+            <div className="game-over-overlay">
+              <div className="name-input-title">恭喜！请输入你的名字</div>
+              <div className="name-input-score">得分: {pendingScoreRef.current}</div>
+              <input
+                type="text"
+                className="name-input"
+                placeholder="输入名字"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                maxLength={12}
+              />
+              <button className="restart-btn" onClick={() => { saveToLeaderboard(pendingScoreRef.current, playerName); setShowNameInput(false); }}>
+                保存成绩
+              </button>
+            </div>
+          )}
+          {gameOver && !showNameInput && (
+            <div className="game-over-overlay">
+              <div className="game-over-text">游戏结束</div>
+              <div className="final-score">最终得分: {score}</div>
+              <button className="restart-btn" onClick={restartGame}>
+                重新开始 (R)
+              </button>
+            </div>
+          )}
+          {isPaused && !gameOver && (
+            <div className="game-over-overlay">
+              <div className="pause-text">游戏暂停</div>
+              <button className="restart-btn" onClick={togglePause}>
+                继续游戏 (P)
+              </button>
+            </div>
+          )}
+          {!gameStarted && !gameOver && (
+            <div className="game-over-overlay">
+              <div className="material-selector">
+                <div className="material-title">选择方块材质</div>
+                <div className="material-options">
+                  <div
+                    className={`material-option ${material === 'classic' ? 'selected' : ''}`}
+                    onClick={() => setMaterial('classic')}
+                  >
+                    <div className="material-preview classic">
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                    </div>
+                    <span className="material-name">经典</span>
+                  </div>
+                  <div
+                    className={`material-option ${material === 'plush' ? 'selected' : ''}`}
+                    onClick={() => setMaterial('plush')}
+                  >
+                    <div className="material-preview plush">
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                      <div className="preview-cell"></div>
+                    </div>
+                    <span className="material-name">晶体</span>
+                  </div>
+                </div>
+                <button className="start-btn" onClick={startGame}>
+                  开始游戏
+                </button>
               </div>
             </div>
-            <div className="mobile-leaderboard-section">
-              <div className="mobile-section-title">排行榜</div>
-              {leaderboard.length === 0 ? (
-                <div className="mobile-leaderboard-empty">暂无记录</div>
-              ) : (
-                <div className="mobile-leaderboard-list">
-                  {leaderboard.slice(0, 5).map((entry, index) => (
-                    <div key={index} className="mobile-leaderboard-item">
-                      <span className="mobile-rank">{index + 1}</span>
-                      <span className="mobile-rank-name">{entry.name}</span>
-                      <span className="mobile-rank-score">{entry.score}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+          )}
+        </div>
+        <div className="mobile-right-panel">
+          <div className="mobile-material-section">
+            <div className="mobile-section-title">材质</div>
+            <div className="mobile-material-options">
+              <button
+                className={`mobile-material-btn ${material === 'classic' ? 'active' : ''}`}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('classic') }}
+              >经典</button>
+              <button
+                className={`mobile-material-btn ${material === 'plush' ? 'active' : ''}`}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setMaterial('plush') }}
+              >晶体</button>
             </div>
+          </div>
+          <div className="mobile-leaderboard-section">
+            <div className="mobile-section-title">排行榜</div>
+            {leaderboard.length === 0 ? (
+              <div className="mobile-leaderboard-empty">暂无记录</div>
+            ) : (
+              <div className="mobile-leaderboard-list">
+                {leaderboard.slice(0, 5).map((entry, index) => (
+                  <div key={index} className="mobile-leaderboard-item">
+                    <span className="mobile-rank">{index + 1}</span>
+                    <span className="mobile-rank-name">{entry.name}</span>
+                    <span className="mobile-rank-score">{entry.score}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="mobile-controls">
