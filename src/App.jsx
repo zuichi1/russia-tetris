@@ -100,9 +100,10 @@ function App() {
   const pendingScoreRef = useRef(0)
 
   const saveToLeaderboard = useCallback((finalScore, name) => {
-    if (finalScore <= 0) return
+    const safeScore = typeof finalScore === 'number' && finalScore > 0 ? finalScore : 0
+    if (safeScore <= 0) return
     const newEntry = {
-      score: finalScore,
+      score: safeScore,
       name: name.trim() || '匿名',
       date: new Date().toLocaleDateString()
     }
