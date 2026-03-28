@@ -506,6 +506,10 @@ body {
   margin-left: 8px;
 }
 
+.mobile-right-panel {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .mobile-right-panel {
     display: flex;
