@@ -108,9 +108,17 @@ function App() {
       date: new Date().toLocaleDateString()
     }
     setLeaderboard(prev => {
-      const updated = [...prev, newEntry]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5)
+      let updated
+      if (prev.length < 5) {
+        updated = [...prev, newEntry].sort((a, b) => b.score - a.score)
+      } else {
+        const lowestScore = prev[prev.length - 1].score
+        if (safeScore > lowestScore) {
+          updated = [...prev, newEntry].sort((a, b) => b.score - a.score).slice(0, 5)
+        } else {
+          updated = prev
+        }
+      }
       localStorage.setItem('tetris-leaderboard', JSON.stringify(updated))
       return updated
     })
